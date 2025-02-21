@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  welcome-app:
+    build: .
+    container_name: welcome-app
+    #image: welcome-app
+    ports:
+      - "8000:5000"
+    restart: always
