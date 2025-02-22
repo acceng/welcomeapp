@@ -22,13 +22,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract Git tag or commit SHA
+      - name: Create tag
         id: vars
         run: |
-          echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          if [ -z "${GITHUB_REF##*/}" ]; then
-            echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          fi
+          TAG=$(date +"%m%d%y-%H%M%S")
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "Generated tag: $TAG"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
