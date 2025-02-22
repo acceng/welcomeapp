@@ -35,3 +35,20 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/temporary:welcome-app-${{ env.TAG }}
+      - name: SSH key setup for VM
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VM_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.VM_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          chmod 600 ~/.ssh/id_rsa
+          chmod 644 ~/.ssh/id_rsa.pub
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: SSH and deploy to VM
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << EOF
+            docker pull ${{ secrets.DOCKER_USERNAME }}/welcome-app:${{ env.TAG }}
+            #docker stop welcome-app-1 || true
+            #docker rm welcome-app-1 || true
+            docker run -d --name welcome-app-1 -p 8000:5000 ${{ secrets.DOCKER_USERNAME }}/temporary:welcome-app-${{ env.TAG }}
+          EOF
