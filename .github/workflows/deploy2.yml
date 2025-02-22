@@ -53,4 +53,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/temporary:welcome-app-${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/temporary:welcome-app-${{ needs.creating_tag.outputs.TAG }}
